@@ -12,6 +12,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { SubmitHandler, useForm } from "react-hook-form";
+
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -19,12 +20,16 @@ import { Input } from "../../components/Form/Input";
 import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
 
-type SignInFormData = {
+interface SignInFormData {
   name: string;
   email: string;
   password: string;
   password_confirmation: string;
-};
+  address: {
+    street: string;
+    number: string;
+  };
+}
 
 const createUserFormSchema = Yup.object({
   name: Yup.string().required("Nome obrigatório!"),
@@ -36,8 +41,12 @@ const createUserFormSchema = Yup.object({
     [null, Yup.ref("password")],
     "As senhas não são iguais!"
   ),
+  address: Yup.object({
+    street: Yup.string().required("Rua é obrigatório!"),
+    number: Yup.string().required("Número é obrigatório!"),
+  }),
 });
-
+// TODO: ajustar a validação com objeto dentro de outro objeto
 export default function CreateUser() {
   const [name, setName] = useState("Michel Lima Ribeiro");
 
@@ -102,6 +111,22 @@ export default function CreateUser() {
                 label="Confirme a senha"
                 {...register("password_confirmation")}
                 error={errors.password_confirmation}
+              />
+            </SimpleGrid>
+            <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+              <Input
+                name="address.street"
+                type="text"
+                label="Rua"
+                {...register("address.street")}
+                error={errors.address?.street}
+              />
+              <Input
+                name="address.number"
+                type="text"
+                label="Número"
+                {...register("address.number")}
+                error={errors.address?.number}
               />
             </SimpleGrid>
           </VStack>
